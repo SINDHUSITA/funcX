@@ -3,6 +3,18 @@ Changelog
 
 .. scriv-insert-here
 
+.. _changelog-1.0.12:
+
+funcx & funcx-endpoint v1.0.12
+------------------------------
+
+Changed
+^^^^^^^
+
+- Updated package dependencies.
+- Simplified format of endpoint status reports.
+
+
 .. _changelog-1.0.11:
 
 funcx & funcx-endpoint v1.0.11
