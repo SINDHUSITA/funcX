@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 
 class CommandState:
     def __init__(self):
-        self.endpoint_config_dir: str = str(pathlib.Path.home() / ".funcx")
+        self.endpoint_config_dir: str = str(pathlib.Path.home() / ".globus_compute")
         self.debug = False
         self.no_color = False
         self.log_to_console = False
@@ -47,7 +47,8 @@ def init_endpoint_configuration_dir(funcx_conf_dir: pathlib.Path):
     elif not funcx_conf_dir.is_dir():
         raise click.ClickException(
             f"File already exists: {funcx_conf_dir}\n\n"
-            "Refusing to initialize Globus Compute configuration directory: path already exists"
+            "Refusing to initialize Globus Compute configuration directory: "
+            "path already exists"
         )
 
 
@@ -165,7 +166,7 @@ def configure_endpoint(
     """Configure an endpoint
 
     Drops a config.py template into the funcx configs directory.
-    The template usually goes to ~/.funcx/<ENDPOINT_NAME>/config.py
+    The template usually goes to ~/.globus_compute/<ENDPOINT_NAME>/config.py
     """
     funcx_dir = get_config_dir()
     ep_dir = funcx_dir / name

@@ -19,7 +19,7 @@ def _home() -> pathlib.Path:
 
 
 def invalidate_old_config() -> None:
-    token_file = _home() / ".funcx" / "credentials" / "funcx_sdk_tokens.json"
+    token_file = _home() / ".globus_compute" / "credentials" / "funcx_sdk_tokens.json"
 
     if token_file.exists():
         try:
@@ -36,11 +36,25 @@ def invalidate_old_config() -> None:
 
 
 def _ensure_funcx_dir() -> pathlib.Path:
-    dirname = _home() / ".funcx"
+    legacy_dirname = _home() / ".funcx"
+    dirname = _home() / ".globus_compute"
+
     try:
-        os.makedirs(dirname)
+        if os.path.exists(legacy_dirname) and os.path.isdir(legacy_dirname):
+            # If the legacy dir (.funcx) already exists, create a symlink
+            os.symlink(legacy_dirname, dirname, target_is_directory=True)
+
+        elif os.path.islink(dirname) and not os.path.exists(dirname):
+            # If the symlink is broken, remove it and create a fresh dir
+            os.unlink(dirname)
+            os.makedirs(dirname)
+
+        else:
+            # Otherwise, just create the dir
+            os.makedirs(dirname)
     except FileExistsError:
         pass
+
     return dirname
 
 

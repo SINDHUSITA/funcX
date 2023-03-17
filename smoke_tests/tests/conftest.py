@@ -21,8 +21,8 @@ from globus_sdk import (
 #
 #  1. `--endpoint` opt
 #  2. FUNX_LOCAL_ENDPOINT_ID (seen here)
-#  3. FUNX_LOCAL_ENDPOINT_NAME (the name of a dir in `~/.funcx/`)
-#  4. An endpoint ID found in ~/.funcx/default/endpoint.json
+#  3. FUNX_LOCAL_ENDPOINT_NAME (the name of a dir in `~/.globus_compute/`)
+#  4. An endpoint ID found in ~/.globus_compute/default/endpoint.json
 #
 #  this var starts with the ID env var load
 _LOCAL_ENDPOINT_ID = os.getenv("FUNCX_LOCAL_ENDPOINT_ID")
@@ -66,7 +66,7 @@ def _get_local_endpoint_id():
     #  - `--endpoint` is not passed
     local_endpoint_name = os.getenv("FUNCX_LOCAL_ENDPOINT_NAME", "default")
     data_path = os.path.join(
-        os.path.expanduser("~"), ".funcx", local_endpoint_name, "endpoint.json"
+        os.path.expanduser("~"), ".globus_compute", local_endpoint_name, "endpoint.json"
     )
 
     try:
