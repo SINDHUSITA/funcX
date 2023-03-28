@@ -187,7 +187,7 @@ class Interchange:
         self.logdir = logdir
         os.makedirs(self.logdir, exist_ok=True)
         log.info(f"Initializing Interchange process with Endpoint ID: {endpoint_id}")
-        log.debug(f"We have entered the clean function")
+        log.info(f"We have entered the clean function")
         #
         self.max_workers_per_node = max_workers_per_node
         self.mem_per_worker = mem_per_worker
