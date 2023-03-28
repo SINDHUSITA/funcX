@@ -1,0 +1,1 @@
+funcx-manager --debug --max_workers=2 -c 1.0 --poll 10 --task_url=tcp://141.142.140.194:54322 --result_url=tcp://141.142.140.194:54878 --logdir=/u/ritwikd2/.funcx/funcx-debug/HighThroughputExecutor/worker_logs --block_id=1 --hb_period=30 --hb_threshold=120 --worker_mode=no_container --container_cmd_options='' --scheduler_mode=hard --worker_type=RAW --available-accelerators 
