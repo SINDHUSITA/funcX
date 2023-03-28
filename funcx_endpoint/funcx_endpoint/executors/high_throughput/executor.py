@@ -532,7 +532,7 @@ class HighThroughputExecutor(RepresentationMixin):
 
                 elif isinstance(msgs, EPStatusReport):
                     # TODO Revert
-                    log.info(f"Received EPStatusReport {msgs}")
+                    log.info(f"Received EPStatusReport (pass through {self.passthrough}){msgs} ")
                     if self.passthrough:
                         try:
                             log.info("VSI3: begin passing results")
