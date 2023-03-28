@@ -534,9 +534,14 @@ class HighThroughputExecutor(RepresentationMixin):
                     # TODO Revert
                     log.info(f"Received EPStatusReport {msgs}")
                     if self.passthrough:
-                        self.results_passthrough.put(
-                            {"task_id": None, "message": dill.dumps(msgs)}
-                        )
+                        try:
+                            log.info("VSI3: begin passing results")
+                            self.results_passthrough.put(
+                                {"task_id": None, "message": dill.dumps(msgs)}
+                            )
+                            log.info(f"VSI3: passed results")
+                        except Exception as ex:
+                            log.info(f"VSI3:  some exception in results_passthrough {ex}")
 
                 else:
                     # TODO Revert
