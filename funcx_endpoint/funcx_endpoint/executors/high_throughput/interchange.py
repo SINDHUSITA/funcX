@@ -187,7 +187,7 @@ class Interchange:
         self.logdir = logdir
         os.makedirs(self.logdir, exist_ok=True)
         log.info(f"Initializing Interchange process with Endpoint ID: {endpoint_id}")
-        log.debug(f"We have entered the clean function")
+        log.info(f"We have entered the clean function")
         #
         self.max_workers_per_node = max_workers_per_node
         self.mem_per_worker = mem_per_worker
@@ -715,14 +715,16 @@ class Interchange:
         prev_manager_stat = None
 
         while not self._kill_event.is_set():
-            self.socks = dict(poller.poll(timeout=poll_period))
+            log.info(f"The timeout period {poll_period}")
+            self.socks = dict(poller.poll(timeout=10000))
 
             # Listen for requests for work
             if (
                 self.task_outgoing in self.socks
                 and self.socks[self.task_outgoing] == zmq.POLLIN
             ):
-                log.trace("starting task_outgoing section")
+                # TODO Revert
+                # log.info("starting task_outgoing section")
                 message = self.task_outgoing.recv_multipart()
                 manager = message[0]
 
@@ -734,11 +736,13 @@ class Interchange:
                         msg = json.loads(message[1].decode("utf-8"))
                         reg_flag = True
                     except Exception:
-                        log.warning(
+                        # TODO Revert
+                        log.info(
                             "Got a non-json registration message from manager:%s",
                             manager,
                         )
-                        log.debug("Message :\n%s\n", message)
+                        # TODO Revert
+                        log.info("Message :\n%s\n", message)
 
                     # By default we set up to ignore bad nodes/registration messages.
                     now = time.time()
@@ -770,7 +774,8 @@ class Interchange:
                     else:
                         # Registration has failed.
                         if self.suppress_failure is False:
-                            log.debug("Setting kill event for bad manager")
+                            # TODO Revert
+                            log.info("Setting kill event for bad manager")
                             self._kill_event.set()
                             e = BadRegistration(manager, critical=True)
                             result_package = {
@@ -780,7 +785,8 @@ class Interchange:
                             pkl_package = dill.dumps(result_package)
                             self.results_outgoing.send(dill.dumps([pkl_package]))
                         else:
-                            log.debug(
+                            # TODO Revert
+                            log.info(
                                 "Suppressing bad registration from manager: %s",
                                 manager,
                             )
@@ -788,13 +794,15 @@ class Interchange:
                 else:
                     mdata["last"] = time.time()
                     if message[1] == b"HEARTBEAT":
-                        log.debug("Manager %s sends heartbeat", manager)
+                        # TODO Revert
+                        log.info("Manager %s sends heartbeat", manager)
                         self.task_outgoing.send_multipart(
                             [manager, b"", PKL_HEARTBEAT_CODE]
                         )
                     else:
                         manager_adv = dill.loads(message[1])
-                        log.debug("Manager %s requested %s", manager, manager_adv)
+                        # TODO Revert
+                        # log.info("Manager %s requested %s", manager, manager_adv)
                         manager_adv["total_workers"] = sum(manager_adv["free"].values())
                         mdata["free_capacity"].update(manager_adv)
                         interesting_managers.add(manager)
@@ -807,7 +815,8 @@ class Interchange:
             if cur_manager_stat != prev_manager_stat:
                 prev_manager_stat = cur_manager_stat
                 _msg = "[MAIN] New managers count (total/interesting): {}/{}"
-                log.debug(_msg.format(*cur_manager_stat))
+                # TODO Revert
+                log.info(_msg.format(*cur_manager_stat))
 
             if time.time() - last_cold_routing_time > self.cold_routing_interval:
                 task_dispatch, dispatched_task = naive_interchange_task_dispatch(
@@ -834,7 +843,8 @@ class Interchange:
             try:
                 while True:
                     manager, task_id = self.task_cancel_running_queue.get(block=False)
-                    log.debug(
+                    # TODO Revert
+                    log.info(
                         "CANCELLED running task (id: %s, manager: %s)", task_id, manager
                     )
                     cancel_message = dill.dumps(("TASK_CANCEL", task_id))
@@ -869,7 +879,8 @@ class Interchange:
                             )
                             self.task_cancel_pending_trap.pop(task_id)
                         else:
-                            log.debug("Task:%s is now WAITING_FOR_LAUNCH", task_id)
+                            #TODO Revert
+                            log.info("BENC: 00300 Task:%s is now WAITING_FOR_LAUNCH", task_id)
                             tt = TaskTransition(
                                 timestamp=time.time_ns(),
                                 state=TaskState.WAITING_FOR_LAUNCH,
@@ -879,18 +890,29 @@ class Interchange:
                             self.task_status_deltas[task_id].append(tt)
 
             # Receive any results and forward to client
+            # log.info(f"Before if stmt  {self.results_incoming} {self.socks}  {zmq.POLLIN}")
+            if self.results_incoming in self.socks:
+                if self.socks[self.results_incoming] and zmq.POLLIN:
+                    log.info("Received incoming data!")
+                    # Handle incoming data
+                else:
+                    log.info(f"No incoming data {self.socks[self.results_incoming]}   {zmq.POLLIN}")
+            # else:
+            #     log.info("Invalid socket: {}".format(self.results_incoming))
             if (
                 self.results_incoming in self.socks
                 and self.socks[self.results_incoming] == zmq.POLLIN
             ):
-                log.debug("entering results_incoming section")
+                #TODO Revert
+                log.info("BENC: 00300 entering results_incoming section")
                 log.info("BENC: 00300 waiting for multipart receive")
 
                 manager, *b_messages = self.results_incoming.recv_multipart()
                 log.info("BENC: 00301 received multipart")
                 mdata = self._ready_manager_queue.get(manager)
                 if not mdata:
-                    log.warning(
+                    # TODO Revert
+                    log.info(
                         "Received a result from a un-registered manager: %s",
                         manager,
                     )
@@ -898,13 +920,14 @@ class Interchange:
                     # We expect the batch of messages to be (optionally) a task status
                     # update message followed by 0 or more task results
                     try:
-                        log.debug("Trying to unpack")
+                        # TODO Revert
+                        log.info("Trying to unpack")
                         manager_report = Message.unpack(b_messages[0])
-                        if manager_report.task_statuses:
-                            log.info(
-                                "Got manager status report: %s",
-                                manager_report.task_statuses,
-                            )
+                        # if manager_report.task_statuses:
+                        #     log.info(
+                        #         "Got manager status report: %s",
+                        #         manager_report.task_statuses,
+                        #     )
 
                         # merge the two dicts of statuses
                         for tid, statuses in manager_report.task_statuses.items():
@@ -926,6 +949,7 @@ class Interchange:
                             self.container_switch_count,
                         )
                     except Exception:
+                        log.info("Exception: 00302 about to un-dill a result")
                         pass
                     if len(b_messages):
                         log.info(f"Got {len(b_messages)} result items in batch")
@@ -934,11 +958,14 @@ class Interchange:
                         r = dill.loads(b_message)
                         log.info("BENC: 00303 undilled a result")
 
-                        log.debug(
+                        # TODO Revert
+                        log.info(
                             "Received task result %s (from %s)", r["task_id"], manager
                         )
                         task_container = self.containers[r["container_id"]]
-                        log.debug(
+
+                        # TODO Revert
+                        log.info(
                             "Removing for manager: %s from %s",
                             manager,
                             self._ready_manager_queue,
@@ -952,7 +979,8 @@ class Interchange:
                             log.info("BENC: 00304 reserialising result")
                             b_messages[idx] = dill.dumps(r)
                             log.info("BENC: 00305 reserialised result")
-                            log.debug(
+                            # TODO Revert
+                            log.info(
                                 "Transferring statuses for %s: %s",
                                 r["task_id"],
                                 r["task_statuses"],
@@ -969,19 +997,24 @@ class Interchange:
                     log.info("BENC: 00307 sent to results_outgoing in interchange")
                     interesting_managers.add(manager)
 
-                    log.debug(f"Current tasks: {mdata['tasks']}")
-                log.debug("leaving results_incoming section")
+                    log.info(f"Current tasks: {mdata['tasks']}")
+                log.info("leaving results_incoming section")
+
 
             # Send status reports from this main thread to avoid thread-safety on zmq
             # sockets
             try:
                 packed_status_report = status_report_queue.get(block=False)
-                log.trace("forwarding status report: %s", packed_status_report)
+                #TODO Revert
+                # log.info("forwarding status report: %s", packed_status_report)
                 self.results_outgoing.send(packed_status_report)
             except queue.Empty:
+                # TODO Revert
+                # log.info("VSI3 Entered queue Empty exception")
                 pass
 
-            log.trace("entering bad_managers section")
+            # TODO Revert
+            # log.info("entering bad_managers section")
             now = time.time()
             hbt_window_start = now - self.heartbeat_threshold
             bad_managers = [
@@ -991,12 +1024,12 @@ class Interchange:
             ]
             bad_manager_msgs = []
             for manager in bad_managers:
-                log.debug(
+                log.info(
                     "Last: %s Current: %s",
                     self._ready_manager_queue[manager]["last"],
                     now,
                 )
-                log.warning(f"Too many heartbeats missed for manager {manager!r}")
+                log.info(f"Too many heartbeats missed for manager {manager!r}")
                 for tasks in self._ready_manager_queue[manager]["tasks"].values():
                     for tid in tasks:
                         try:
@@ -1009,17 +1042,19 @@ class Interchange:
                             }
                             pkl_package = dill.dumps(result_package)
                             bad_manager_msgs.append(pkl_package)
-                log.warning(f"Unregistering manager {manager!r}")
+                log.info(f"Unregistering manager {manager!r}")
                 self._ready_manager_queue.pop(manager, None)
                 if manager in interesting_managers:
                     interesting_managers.remove(manager)
             if bad_manager_msgs:
-                log.warning(f"Sending task failure reports of manager {manager!r}")
+                log.info(f"Sending task failure reports of manager {manager!r}")
                 self.results_outgoing.send(dill.dumps(bad_manager_msgs))
-            log.trace("ending one main loop iteration")
+            # TODO Revert
+            # log.info("ending one main loop iteration")
 
         delta = time.time() - start
         log.info(f"Processed {count} tasks in {delta} seconds")
+
         log.warning("Exiting")
 
     def get_status_report(self):

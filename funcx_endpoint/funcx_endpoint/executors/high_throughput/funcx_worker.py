@@ -87,7 +87,8 @@ class FuncXWorker:
         sys.exit(1)
 
     def _send_registration_message(self):
-        log.debug("Sending registration")
+        #TODO revert
+        log.info("Sending registration")
         payload = {"worker_id": self.worker_id, "worker_type": self.worker_type}
         self.task_socket.send_multipart([b"REGISTER", dill.dumps(payload)])
 
@@ -95,12 +96,18 @@ class FuncXWorker:
         log.info("Starting worker")
         self._send_registration_message()
 
+        #TODO Revert
+        log.info("VSI3  Entering while loop")
+
         while True:
-            log.debug("Waiting for task")
+            #TODO Revert
+            log.info("Waiting for task")
             p_task_id, p_container_id, msg = self.task_socket.recv_multipart()
+            log.info(f"VSI3 p_tasks_id {p_task_id}")
             task_id: str = dill.loads(p_task_id)
             container_id: str = dill.loads(p_container_id)
-            log.debug(f"Received task with task_id='{task_id}' and msg='{msg}'")
+            #TODO Revert
+            log.info(f"Received task with task_id='{task_id}' and msg='{msg}'")
 
             result = None
             if task_id == "KILL":
@@ -114,15 +121,18 @@ class FuncXWorker:
                 result = self.execute_task(task_id, msg)
                 log.info("BENC: 00120 returned from execute task")
                 result["container_id"] = container_id
-                log.debug("Sending result")
+                # TODO Revert
+                log.info("Sending result")
                 # send bytes over the socket back to the manager
                 self.task_socket.send_multipart([b"TASK_RET", dill.dumps(result)])
                 log.info("BENC: 00121 send result over task_socket")
 
-        log.warning("Broke out of the loop... dying")
+        #TODO Revert
+        log.info("Broke out of the loop... dying")
 
     def execute_task(self, task_id: str, task_body: bytes) -> dict:
-        log.debug("executing task task_id='%s'", task_id)
+        # TODO Revert
+        log.info("executing task task_id='%s'", task_id)
         exec_start = TaskTransition(
             timestamp=time.time_ns(), state=TaskState.EXEC_START, actor=ActorName.WORKER
         )
@@ -131,7 +141,8 @@ class FuncXWorker:
             result = self.call_user_function(task_body)
             log.info("BENC: 00110 returned from call user function")
         except Exception:
-            log.exception("Caught an exception while executing user function")
+            # TODO Revert
+            log.info("Caught an exception while executing user function")
             result_message: dict[
                 str, str | tuple[str, str] | list[TaskTransition]
             ] = dict(
@@ -141,7 +152,8 @@ class FuncXWorker:
             )
 
         else:
-            log.debug("Execution completed without exception")
+            #TODO Revert
+            log.info("Execution completed without exception")
             result_message = dict(task_id=task_id, data=result)
 
         exec_end = TaskTransition(
@@ -152,7 +164,8 @@ class FuncXWorker:
 
         result_message["task_statuses"] = [exec_start, exec_end]
 
-        log.debug(
+        # TODO Revert
+        log.info(
             "task %s completed in %d ns",
             task_id,
             (exec_end.timestamp - exec_start.timestamp),
@@ -183,7 +196,8 @@ class FuncXWorker:
 
         f, args, kwargs = self.serializer.unpack_and_deserialize(task_data)
         result_data = f(*args, **kwargs)
-        log.info("BENC: 00100 serializing data on worker")
+        log.info("BENC: 00100 serializing data on worker {result_data}")
+
         serialized_data = self.serialize(result_data)
         log.info("BENC: 00101 serialized data on worker")
 
@@ -252,3 +266,5 @@ def cli_run():
 
 if __name__ == "__main__":
     cli_run()
+
+# /u/ritwikd2/.conda/envs/funcx-debug/lib/python3.9/site-packages/funcx_endpoint/executors/high_throughput

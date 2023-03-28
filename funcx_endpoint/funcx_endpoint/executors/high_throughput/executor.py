@@ -505,35 +505,47 @@ class HighThroughputExecutor(RepresentationMixin):
             try: 
                 log.info("BENC: 00400 receiving a value (or nothing) from result incoming queue")
                 msgs = self.incoming_q.get(timeout=1)
-                log.info("BENC: 00401 received a value from result incoming queue")
+                #TODO Revert
+                log.info(f"BENC: 00401 received a value from result incoming queue {msgs}")
 
             except queue.Empty:
-                log.debug("queue empty")
+                # TODO Revert
+                log.info("queue empty")
                 # Timed out.
                 continue
 
             except OSError as e:
-                log.exception(f"Caught broken queue with exception code {e.errno}: {e}")
+                # TODO Revert
+                log.info(f"Caught broken queue with exception code {e.errno}: {e}")
                 return
 
             except Exception as e:
-                log.exception(f"Caught unknown exception: {e}")
+                # TODO Revert
+                log.info(f"Caught unknown exception: {e}")
                 return
 
             else:
                 if msgs is None:
-                    log.debug("Got None, exiting")
+                    # TODO Revert
+                    log.info("Got None, exiting")
                     return
 
                 elif isinstance(msgs, EPStatusReport):
-                    log.debug(f"Received EPStatusReport {msgs}")
+                    # TODO Revert
+                    # log.info(f"Received EPStatusReport (pass through {self.passthrough}){msgs} ")
                     if self.passthrough:
-                        self.results_passthrough.put(
-                            {"task_id": None, "message": dill.dumps(msgs)}
-                        )
+                        try:
+                            # log.info("VSI3: begin passing results")
+                            self.results_passthrough.put(
+                                {"task_id": None, "message": dill.dumps(msgs)}
+                            )
+                            # log.info(f"VSI3: passed results")
+                        except Exception as ex:
+                            log.info(f"VSI3:  some exception in results_passthrough {ex}")
 
                 else:
-                    log.debug("Unpacking results")
+                    # TODO Revert
+                    log.info(f"Unpacking results {msgs}")
                     for serialized_msg in msgs:
                         try:
                             log.info("BENC: 00402 deserializing a message")
@@ -586,8 +598,8 @@ class HighThroughputExecutor(RepresentationMixin):
                             x = self.results_passthrough.put(
                                 {"task_id": sent_task_id, "message": serialized_msg}
                             )
-                            log.debug(f"task:{tid} ret value: {x}")
-                            log.debug(
+                            log.info(f"task:{tid} ret value: {x}")
+                            log.info(
                                 "task:%s items in queue: %s",
                                 tid,
                                 self.results_passthrough.qsize(),

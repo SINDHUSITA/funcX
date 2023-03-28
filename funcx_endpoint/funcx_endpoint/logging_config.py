@@ -65,13 +65,13 @@ class FuncxConsoleFormatter(logging.Formatter):
 
     def __init__(
         self,
-        debug: bool = False,
+        debug: bool = True,
         no_color: bool = False,
         fmt: str = "",
         datefmt: str = "%Y-%m-%d %H:%M:%S",
     ) -> None:
         super().__init__()
-
+        debug = True
         self.use_color = debug and not no_color and sys.stderr.isatty()
 
         if fmt:

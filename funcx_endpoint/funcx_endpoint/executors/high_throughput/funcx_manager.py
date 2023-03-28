@@ -461,7 +461,8 @@ class Manager:
                         )
 
             else:
-                log.trace("No incoming tasks")
+                #TODO Revert
+                log.info("No incoming tasks")
                 # Limit poll duration to heartbeat_period
                 # heartbeat_period is in s vs poll_timer in ms
                 if not poll_timer:
@@ -470,17 +471,18 @@ class Manager:
 
                 # Only check if no messages were received.
                 if time.time() > last_interchange_contact + self.heartbeat_threshold:
-                    log.critical(
-                        "Missing contact with interchange beyond heartbeat_threshold"
+                    #TODO Revert
+                    log.info(
+                        f"Missing contact with interchange beyond heartbeat_threshold {self.heartbeat_threshold}"
                     )
                     kill_event.set()
-                    log.critical("Killing all workers")
+                    log.info("Killing all workers")
                     for proc in self.worker_procs.values():
                         proc.kill()
-                    log.critical("Exiting")
+                    log.info("Exiting")
                     break
-
-            log.trace(
+            #TODO Revert
+            log.info(
                 "To-Die Counts: %s, alive worker counts: %s",
                 self.worker_map.to_die_count,
                 self.worker_map.total_worker_type_counts,
@@ -663,9 +665,9 @@ class Manager:
                 self.task_status_deltas,
                 self.container_switch_count,
             )
-            log.info(f"Sending status report to interchange: {msg.task_statuses}")
+            # log.info(f"Sending status report to interchange: {msg.task_statuses}")
             self.pending_result_queue.put(msg)
-            log.info("Clearing task deltas")
+            # log.info("Clearing task deltas")
             self.task_status_deltas.clear()
 
     def push_results(self, kill_event, max_result_batch_size=1):
@@ -699,7 +701,8 @@ class Manager:
                 if isinstance(r, ManagerStatusReport):
                     items.insert(0, r.pack())
                 else:
-                    log.info("BENC: 00211 it is a result - adding to items")
+                    log.info(f"BENC: 00211 it is a result - adding to items {r}")
+                    log.info(f" The size of items is {sys.getsizeof(r)}")
                     items.append(r)
             except queue.Empty:
                 pass
@@ -708,6 +711,7 @@ class Manager:
 
             # If we have reached poll_period duration or timer has expired, we send
             # results
+            # log.info(f"{len(items)}  and queue size {self.max_queue_size}")
             if (
                 len(items) >= self.max_queue_size
                 or time.time() > last_beat + push_poll_period
