@@ -153,12 +153,16 @@ class ResultsIncoming:
     def get(self, block=True, timeout=None):
         block_messages = self.results_receiver.recv()
         try:
+            # TODO Revert
+            log.info(f"VSI3:  The block messages are {block_messages}")
             res = dill.loads(block_messages)
         except dill.UnpicklingError:
             try:
                 res = Message.unpack(block_messages)
+                # TODO Revert
+                log.info(f"VSI3:  The res messages is {res}")
             except Exception:
-                log.exception(
+                log.info(
                     "Message in results queue is not pickle/Message formatted: %s",
                     block_messages,
                 )
