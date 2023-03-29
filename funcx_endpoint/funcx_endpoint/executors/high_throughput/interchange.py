@@ -901,7 +901,8 @@ class Interchange:
                 log.info("BENC: 00301 received multipart")
                 mdata = self._ready_manager_queue.get(manager)
                 if not mdata:
-                    log.warning(
+                    # TODO Revert
+                    log.info(
                         "Received a result from a un-registered manager: %s",
                         manager,
                     )
@@ -988,6 +989,7 @@ class Interchange:
 
                     log.debug(f"Current tasks: {mdata['tasks']}")
                 log.debug("leaving results_incoming section")
+
 
             # Send status reports from this main thread to avoid thread-safety on zmq
             # sockets
