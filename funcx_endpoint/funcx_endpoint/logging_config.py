@@ -65,7 +65,7 @@ class FuncxConsoleFormatter(logging.Formatter):
 
     def __init__(
         self,
-        debug: bool = False,
+        debug: bool = True,
         no_color: bool = False,
         fmt: str = "",
         datefmt: str = "%Y-%m-%d %H:%M:%S",
