@@ -87,7 +87,8 @@ class FuncXWorker:
         sys.exit(1)
 
     def _send_registration_message(self):
-        log.debug("Sending registration")
+        #TODO revert
+        log.info("Sending registration")
         payload = {"worker_id": self.worker_id, "worker_type": self.worker_type}
         self.task_socket.send_multipart([b"REGISTER", dill.dumps(payload)])
 
@@ -95,8 +96,12 @@ class FuncXWorker:
         log.info("Starting worker")
         self._send_registration_message()
 
+        #TODO Revert
+        log.info("VSI3  Entering while loop")
+
         while True:
-            log.debug("Waiting for task")
+            #TODO Revert
+            log.info("Waiting for task")
             p_task_id, p_container_id, msg = self.task_socket.recv_multipart()
             log.info(f"VSI3 p_tasks_id {p_task_id}")
             task_id: str = dill.loads(p_task_id)
@@ -122,7 +127,8 @@ class FuncXWorker:
                 self.task_socket.send_multipart([b"TASK_RET", dill.dumps(result)])
                 log.info("BENC: 00121 send result over task_socket")
 
-        log.warning("Broke out of the loop... dying")
+        #TODO Revert
+        log.info("Broke out of the loop... dying")
 
     def execute_task(self, task_id: str, task_body: bytes) -> dict:
         # TODO Revert
@@ -259,3 +265,5 @@ def cli_run():
 
 if __name__ == "__main__":
     cli_run()
+
+# /u/ritwikd2/.conda/envs/funcx-debug/lib/python3.9/site-packages/funcx_endpoint/executors/high_throughput
