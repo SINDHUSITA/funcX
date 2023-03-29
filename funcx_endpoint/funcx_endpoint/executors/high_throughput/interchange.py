@@ -939,7 +939,7 @@ class Interchange:
                             self.container_switch_count,
                         )
                     except Exception:
-                        log.info("BENC: 00302 about to un-dill a result")
+                        log.info("Exception: 00302 about to un-dill a result")
                         pass
                     if len(b_messages):
                         log.info(f"Got {len(b_messages)} result items in batch")

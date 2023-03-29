@@ -166,6 +166,8 @@ class ResultsIncoming:
                     "Message in results queue is not pickle/Message formatted: %s",
                     block_messages,
                 )
+        except Exception as ex:
+            log.info("VSI3 raised generic exception "+ str(ex))
         return res
 
     def request_close(self):
