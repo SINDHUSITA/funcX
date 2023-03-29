@@ -998,11 +998,11 @@ class Interchange:
                 self.results_outgoing.send(packed_status_report)
             except queue.Empty:
                 # TODO Revert
-                log.info("VSI3 Entered queue Empty exception")
+                # log.info("VSI3 Entered queue Empty exception")
                 pass
 
             # TODO Revert
-            log.info("entering bad_managers section")
+            # log.info("entering bad_managers section")
             now = time.time()
             hbt_window_start = now - self.heartbeat_threshold
             bad_managers = [
@@ -1038,7 +1038,7 @@ class Interchange:
                 log.warning(f"Sending task failure reports of manager {manager!r}")
                 self.results_outgoing.send(dill.dumps(bad_manager_msgs))
             # TODO Revert
-            log.info("ending one main loop iteration")
+            # log.info("ending one main loop iteration")
 
         delta = time.time() - start
         log.info(f"Processed {count} tasks in {delta} seconds")
