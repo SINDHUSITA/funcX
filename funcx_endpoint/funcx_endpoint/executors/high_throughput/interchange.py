@@ -889,7 +889,7 @@ class Interchange:
                             self.task_status_deltas[task_id].append(tt)
 
             # Receive any results and forward to client
-            log.info(f"Before if stmt  {self.results_incoming} {self.socks}  {zmq.POLLIN}")
+            # log.info(f"Before if stmt  {self.results_incoming} {self.socks}  {zmq.POLLIN}")
             if (
                 self.results_incoming in self.socks
                 and self.socks[self.results_incoming] == zmq.POLLIN
