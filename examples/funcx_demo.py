@@ -3,10 +3,10 @@ from funcx import FuncXExecutor
 
 def print_hw():
     import numpy as np 
-    return np.array([1,2,3,4]) 
+    return "Hello world"
 
 
-with FuncXExecutor(endpoint_id="915d4ae6-52f1-4cbf-b841-3e19db3fd121") as ex:
+with FuncXExecutor(endpoint_id="d26f1116-219f-463f-9697-233506ec66c0") as ex:
     fut = ex.submit(print_hw)
 
     print(fut.result())

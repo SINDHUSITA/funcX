@@ -889,6 +889,7 @@ class Interchange:
                             self.task_status_deltas[task_id].append(tt)
 
             # Receive any results and forward to client
+            log.info(f"Before if stmt  {self.results_incoming} {self.socks}  {zmq.POLLIN}")
             if (
                 self.results_incoming in self.socks
                 and self.socks[self.results_incoming] == zmq.POLLIN
@@ -1014,12 +1015,12 @@ class Interchange:
             ]
             bad_manager_msgs = []
             for manager in bad_managers:
-                log.debug(
+                log.info(
                     "Last: %s Current: %s",
                     self._ready_manager_queue[manager]["last"],
                     now,
                 )
-                log.warning(f"Too many heartbeats missed for manager {manager!r}")
+                log.info(f"Too many heartbeats missed for manager {manager!r}")
                 for tasks in self._ready_manager_queue[manager]["tasks"].values():
                     for tid in tasks:
                         try:
@@ -1032,12 +1033,12 @@ class Interchange:
                             }
                             pkl_package = dill.dumps(result_package)
                             bad_manager_msgs.append(pkl_package)
-                log.warning(f"Unregistering manager {manager!r}")
+                log.info(f"Unregistering manager {manager!r}")
                 self._ready_manager_queue.pop(manager, None)
                 if manager in interesting_managers:
                     interesting_managers.remove(manager)
             if bad_manager_msgs:
-                log.warning(f"Sending task failure reports of manager {manager!r}")
+                log.info(f"Sending task failure reports of manager {manager!r}")
                 self.results_outgoing.send(dill.dumps(bad_manager_msgs))
             # TODO Revert
             # log.info("ending one main loop iteration")

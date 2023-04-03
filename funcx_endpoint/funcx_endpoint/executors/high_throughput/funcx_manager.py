@@ -461,7 +461,8 @@ class Manager:
                         )
 
             else:
-                log.trace("No incoming tasks")
+                #TODO Revert
+                log.info("No incoming tasks")
                 # Limit poll duration to heartbeat_period
                 # heartbeat_period is in s vs poll_timer in ms
                 if not poll_timer:
@@ -470,17 +471,18 @@ class Manager:
 
                 # Only check if no messages were received.
                 if time.time() > last_interchange_contact + self.heartbeat_threshold:
-                    log.critical(
-                        "Missing contact with interchange beyond heartbeat_threshold"
+                    #TODO Revert
+                    log.info(
+                        f"Missing contact with interchange beyond heartbeat_threshold {self.heartbeat_threshold}"
                     )
                     kill_event.set()
-                    log.critical("Killing all workers")
+                    log.info("Killing all workers")
                     for proc in self.worker_procs.values():
                         proc.kill()
-                    log.critical("Exiting")
+                    log.info("Exiting")
                     break
-
-            log.trace(
+            #TODO Revert
+            log.info(
                 "To-Die Counts: %s, alive worker counts: %s",
                 self.worker_map.to_die_count,
                 self.worker_map.total_worker_type_counts,

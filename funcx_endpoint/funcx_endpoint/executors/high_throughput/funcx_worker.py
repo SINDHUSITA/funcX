@@ -197,6 +197,7 @@ class FuncXWorker:
         f, args, kwargs = self.serializer.unpack_and_deserialize(task_data)
         result_data = f(*args, **kwargs)
         log.info("BENC: 00100 serializing data on worker")
+
         serialized_data = self.serialize(result_data)
         log.info("BENC: 00101 serialized data on worker")
 
