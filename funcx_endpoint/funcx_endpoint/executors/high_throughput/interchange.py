@@ -914,11 +914,11 @@ class Interchange:
                         # TODO Revert
                         log.info("Trying to unpack")
                         manager_report = Message.unpack(b_messages[0])
-                        if manager_report.task_statuses:
-                            log.info(
-                                "Got manager status report: %s",
-                                manager_report.task_statuses,
-                            )
+                        # if manager_report.task_statuses:
+                        #     log.info(
+                        #         "Got manager status report: %s",
+                        #         manager_report.task_statuses,
+                        #     )
 
                         # merge the two dicts of statuses
                         for tid, statuses in manager_report.task_statuses.items():
@@ -988,8 +988,8 @@ class Interchange:
                     log.info("BENC: 00307 sent to results_outgoing in interchange")
                     interesting_managers.add(manager)
 
-                    log.debug(f"Current tasks: {mdata['tasks']}")
-                log.debug("leaving results_incoming section")
+                    log.info(f"Current tasks: {mdata['tasks']}")
+                log.info("leaving results_incoming section")
 
 
             # Send status reports from this main thread to avoid thread-safety on zmq
