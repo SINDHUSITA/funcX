@@ -665,9 +665,9 @@ class Manager:
                 self.task_status_deltas,
                 self.container_switch_count,
             )
-            log.info(f"Sending status report to interchange: {msg.task_statuses}")
+            # log.info(f"Sending status report to interchange: {msg.task_statuses}")
             self.pending_result_queue.put(msg)
-            log.info("Clearing task deltas")
+            # log.info("Clearing task deltas")
             self.task_status_deltas.clear()
 
     def push_results(self, kill_event, max_result_batch_size=1):
@@ -701,7 +701,7 @@ class Manager:
                 if isinstance(r, ManagerStatusReport):
                     items.insert(0, r.pack())
                 else:
-                    log.info("BENC: 00211 it is a result - adding to items")
+                    log.info(f"BENC: 00211 it is a result - adding to items {r}")
                     items.append(r)
             except queue.Empty:
                 pass

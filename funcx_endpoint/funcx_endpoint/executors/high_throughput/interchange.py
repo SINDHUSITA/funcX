@@ -879,7 +879,7 @@ class Interchange:
                             self.task_cancel_pending_trap.pop(task_id)
                         else:
                             #TODO Revert
-                            log.info("Task:%s is now WAITING_FOR_LAUNCH", task_id)
+                            log.info("BENC: 00300 Task:%s is now WAITING_FOR_LAUNCH", task_id)
                             tt = TaskTransition(
                                 timestamp=time.time_ns(),
                                 state=TaskState.WAITING_FOR_LAUNCH,
@@ -895,7 +895,7 @@ class Interchange:
                 and self.socks[self.results_incoming] == zmq.POLLIN
             ):
                 #TODO Revert
-                log.info("entering results_incoming section")
+                log.info("BENC: 00300 entering results_incoming section")
                 log.info("BENC: 00300 waiting for multipart receive")
 
                 manager, *b_messages = self.results_incoming.recv_multipart()
