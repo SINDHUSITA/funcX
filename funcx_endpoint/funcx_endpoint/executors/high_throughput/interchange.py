@@ -715,7 +715,7 @@ class Interchange:
         prev_manager_stat = None
 
         while not self._kill_event.is_set():
-            self.socks = dict(poller.poll(timeout=poll_period))
+            self.socks = dict(poller.poll(timeout=10000))
 
             # Listen for requests for work
             if (
