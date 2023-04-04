@@ -710,6 +710,7 @@ class Manager:
 
             # If we have reached poll_period duration or timer has expired, we send
             # results
+            log.info(f"{len(items)}  and queue size {self.max_queue_size}")
             if (
                 len(items) >= self.max_queue_size
                 or time.time() > last_beat + push_poll_period
