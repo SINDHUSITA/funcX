@@ -723,7 +723,7 @@ class Interchange:
                 and self.socks[self.task_outgoing] == zmq.POLLIN
             ):
                 # TODO Revert
-                log.info("starting task_outgoing section")
+                # log.info("starting task_outgoing section")
                 message = self.task_outgoing.recv_multipart()
                 manager = message[0]
 
@@ -801,7 +801,7 @@ class Interchange:
                     else:
                         manager_adv = dill.loads(message[1])
                         # TODO Revert
-                        log.info("Manager %s requested %s", manager, manager_adv)
+                        # log.info("Manager %s requested %s", manager, manager_adv)
                         manager_adv["total_workers"] = sum(manager_adv["free"].values())
                         mdata["free_capacity"].update(manager_adv)
                         interesting_managers.add(manager)

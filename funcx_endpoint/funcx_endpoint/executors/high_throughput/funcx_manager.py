@@ -702,6 +702,7 @@ class Manager:
                     items.insert(0, r.pack())
                 else:
                     log.info(f"BENC: 00211 it is a result - adding to items {r}")
+                    log.info(f" The size of items is {sys.getsizeof(r)}")
                     items.append(r)
             except queue.Empty:
                 pass
