@@ -997,7 +997,7 @@ class Interchange:
             try:
                 packed_status_report = status_report_queue.get(block=False)
                 #TODO Revert
-                log.info("forwarding status report: %s", packed_status_report)
+                # log.info("forwarding status report: %s", packed_status_report)
                 self.results_outgoing.send(packed_status_report)
             except queue.Empty:
                 # TODO Revert
