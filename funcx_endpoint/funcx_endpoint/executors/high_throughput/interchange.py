@@ -890,6 +890,14 @@ class Interchange:
 
             # Receive any results and forward to client
             # log.info(f"Before if stmt  {self.results_incoming} {self.socks}  {zmq.POLLIN}")
+            if self.results_incoming in self.socks:
+                if self.socks[self.results_incoming] and zmq.POLLIN:
+                    log.info("Received incoming data!")
+                    # Handle incoming data
+                else:
+                    log.info(f"No incoming data {self.socks[self.results_incoming]}   {zmq.POLLIN}")
+            # else:
+            #     log.info("Invalid socket: {}".format(self.results_incoming))
             if (
                 self.results_incoming in self.socks
                 and self.socks[self.results_incoming] == zmq.POLLIN
