@@ -712,16 +712,16 @@ class Manager:
             # If we have reached poll_period duration or timer has expired, we send
             # results
             # log.info(f"{len(items)}  and queue size {self.max_queue_size}")
-            # if (
-            #     len(items) >= self.max_queue_size
-            #     or time.time() > last_beat + push_poll_period
-            # ):
-            last_beat = time.time()
-            if len(items) > 0:
-                log.info("BENC: 00212 sending items multipart to result_outgoing in funcx-manager")
-                self.result_outgoing.send_multipart(items)
-                log.info("BENC: 00213 sent items multipart to result_outgoing in funcx-manager")
-                items = []
+            if (
+                len(items) >= self.max_queue_size
+                or time.time() > last_beat + push_poll_period
+            ):
+                last_beat = time.time()
+                if items:
+                    log.info("BENC: 00212 sending items multipart to result_outgoing in funcx-manager")
+                    self.result_outgoing.send_multipart(items)
+                    log.info("BENC: 00213 sent items multipart to result_outgoing in funcx-manager")
+                    items = []
 
         log.critical("Exiting")
 
