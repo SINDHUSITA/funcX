@@ -717,7 +717,7 @@ class Manager:
             #     or time.time() > last_beat + push_poll_period
             # ):
             last_beat = time.time()
-            if items:
+            if len(items) > 0:
                 log.info("BENC: 00212 sending items multipart to result_outgoing in funcx-manager")
                 self.result_outgoing.send_multipart(items)
                 log.info("BENC: 00213 sent items multipart to result_outgoing in funcx-manager")
